@@ -1,14 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,17 +16,17 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20.0),
+            SizedBox(height: 10.0),
             Image(
               image: AssetImage("images/logo.png"),
-              width: 350.0,
-              height: 300.0,
+              width: 300.0,
+              height: 250.0,
               alignment: Alignment.center,
             ),
             Text(
-              "Login as a Rider",
+              "Register as a Rider",
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 20,
                 fontFamily: "Brand Bold",
               ),
               textAlign: TextAlign.center,
@@ -36,9 +36,30 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
                   TextField(
+                    decoration: InputDecoration(
+                        labelText: "Name",
+                        labelStyle: TextStyle(fontSize: 14),
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                        )),
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  TextField(
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                         labelText: "Email",
+                        labelStyle: TextStyle(fontSize: 14),
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                        )),
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  TextField(
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                        labelText: "Phone",
                         labelStyle: TextStyle(fontSize: 14),
                         hintStyle: TextStyle(
                           color: Colors.grey,
@@ -66,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 50,
                       child: Center(
                         child: Text(
-                          "Login",
+                          "Create Account",
                           style:
                               TextStyle(fontSize: 18, fontFamily: "Brand Bold"),
                         ),
@@ -80,12 +101,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             RichText(
               text: TextSpan(
-                  text: "Don't have an account?",
+                  text: "Already have an account?",
                   style:
                       TextStyle(color: Colors.black, fontFamily: "Brand Bold"),
                   children: <TextSpan>[
                     TextSpan(
-                      text: 'Register now!',
+                      text: 'Login!',
                       style: TextStyle(
                           color: Color.fromARGB(255, 211, 194, 41),
                           fontSize: 16),
