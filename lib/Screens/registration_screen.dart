@@ -1,14 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:uber_app/Screens/loginscreen.dart';
+import 'package:uber_app/Screens/mainscreen.dart';
+import 'package:uber_app/main.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
+  static const String idScreen = "register";
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,14 +27,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 10.0),
-            Image(
+            const SizedBox(height: 10.0),
+            const Image(
               image: AssetImage("images/logo.png"),
               width: 300.0,
               height: 250.0,
               alignment: Alignment.center,
             ),
-            Text(
+            const Text(
               "Register as a Rider",
               style: TextStyle(
                 fontSize: 20,
@@ -36,54 +47,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 children: [
                   TextField(
-                    decoration: InputDecoration(
+                    textCapitalization: TextCapitalization.words,
+                    controller: nameController,
+                    decoration: const InputDecoration(
                         labelText: "Name",
                         labelStyle: TextStyle(fontSize: 14),
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 10,
                         )),
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
                   TextField(
+                    controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         labelText: "Email",
                         labelStyle: TextStyle(fontSize: 14),
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 10,
                         )),
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
                   TextField(
+                    controller: phoneController,
                     keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         labelText: "Phone",
                         labelStyle: TextStyle(fontSize: 14),
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 10,
                         )),
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
                   TextField(
+                    controller: passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         labelText: "Password",
                         labelStyle: TextStyle(fontSize: 14),
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 10,
                         )),
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   MaterialButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if (nameController.text.length < 4) {
+                        displayToastMessage(
+                            "Name must be atleast 3 characters.", context);
+                      } else if (!emailController.text.contains("@")) {
+                        displayToastMessage("Email address invalid", context);
+                      } else if (phoneController.text.isEmpty) {
+                        displayToastMessage("Phone number required", context);
+                      } else if (passwordController.text.length < 6) {
+                        displayToastMessage(
+                            "Password must be atleast 6 characters.", context);
+                      }
+                      registerNewUser(context);
+                    },
                     color: Colors.yellow,
                     textColor: Colors.black,
-                    child: Container(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24)),
+                    child: const SizedBox(
                       height: 50,
                       child: Center(
                         child: Text(
@@ -93,8 +124,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                     ),
-                    shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(24)),
                   )
                 ],
               ),
@@ -102,17 +131,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
             RichText(
               text: TextSpan(
                   text: "Already have an account?",
-                  style:
-                      TextStyle(color: Colors.black, fontFamily: "Brand Bold"),
+                  style: const TextStyle(
+                      color: Colors.black, fontFamily: "Brand Bold"),
                   children: <TextSpan>[
                     TextSpan(
                       text: 'Login!',
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Color.fromARGB(255, 211, 194, 41),
                           fontSize: 16),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          print("rEGISTERED");
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, LoginScreen.idScreen, (route) => false);
                         },
                     )
                   ]),
@@ -122,4 +152,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  void registerNewUser(BuildContext context) async {
+    final User? firebaseUser = (await _firebaseAuth
+            .createUserWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text)
+            .catchError((errMsg) {
+      displayToastMessage("Error:$errMsg", context);
+    }))
+        .user;
+    if (firebaseUser != null) {
+      Map userDataMap = {
+        "name": nameController.text.trim(),
+        "email": emailController.text.trim(),
+        "phone": phoneController.text.trim(),
+      };
+      userRef.child(firebaseUser.uid).set(userDataMap);
+      displayToastMessage(
+          "Congratulations, your account has been succesfully created.",
+          context);
+      Navigator.pushNamedAndRemoveUntil(
+          context, MainScreen.idScreen, (route) => false);
+    } else {
+      displayToastMessage("User has not been created", context);
+    }
+  }
+}
+
+displayToastMessage(String message, BuildContext context) {
+  Fluttertoast.showToast(msg: message);
 }

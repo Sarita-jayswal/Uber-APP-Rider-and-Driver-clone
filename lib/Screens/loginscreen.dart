@@ -1,9 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:uber_app/Screens/registration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
-
+  static String idScreen = "login";
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -16,14 +17,14 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20.0),
-            Image(
+            const SizedBox(height: 20.0),
+            const Image(
               image: AssetImage("images/logo.png"),
               width: 350.0,
               height: 300.0,
               alignment: Alignment.center,
             ),
-            Text(
+            const Text(
               "Login as a Rider",
               style: TextStyle(
                 fontSize: 24,
@@ -35,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  TextField(
+                  const TextField(
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                         labelText: "Email",
@@ -46,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         )),
                     style: TextStyle(fontSize: 14),
                   ),
-                  TextField(
+                  const TextField(
                     obscureText: true,
                     decoration: InputDecoration(
                         labelText: "Password",
@@ -57,12 +58,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         )),
                     style: TextStyle(fontSize: 14),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   MaterialButton(
                     onPressed: () {},
                     color: Colors.yellow,
                     textColor: Colors.black,
-                    child: Container(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24)),
+                    child: const SizedBox(
                       height: 50,
                       child: Center(
                         child: Text(
@@ -72,8 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(24)),
                   )
                 ],
               ),
@@ -81,17 +82,18 @@ class _LoginScreenState extends State<LoginScreen> {
             RichText(
               text: TextSpan(
                   text: "Don't have an account?",
-                  style:
-                      TextStyle(color: Colors.black, fontFamily: "Brand Bold"),
+                  style: const TextStyle(
+                      color: Colors.black, fontFamily: "Brand Bold"),
                   children: <TextSpan>[
                     TextSpan(
                       text: 'Register now!',
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Color.fromARGB(255, 211, 194, 41),
                           fontSize: 16),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          print("rEGISTERED");
+                          Navigator.pushNamedAndRemoveUntil(context,
+                              RegisterScreen.idScreen, (route) => false);
                         },
                     )
                   ]),
