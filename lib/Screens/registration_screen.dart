@@ -154,28 +154,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  void registerNewUser(BuildContext context) async {
-    final User? firebaseUser = (await _firebaseAuth
-            .createUserWithEmailAndPassword(
-                email: emailController.text, password: passwordController.text)
-            .catchError((errMsg) {
-      displayToastMessage("Error:$errMsg", context);
-    }))
-        .user;
-    if (firebaseUser != null) {
-      Map userDataMap = {
-        "name": nameController.text.trim(),
-        "email": emailController.text.trim(),
-        "phone": phoneController.text.trim(),
-      };
-      userRef.child(firebaseUser.uid).set(userDataMap);
-      displayToastMessage(
-          "Congratulations, your account has been succesfully created.",
-          context);
-      Navigator.pushNamedAndRemoveUntil(
-          context, MainScreen.idScreen, (route) => false);
-    } else {
-      displayToastMessage("User has not been created", context);
+  registerNewUser(BuildContext context) async {
+    try {
+      final User? firebaseUser =
+          (await _firebaseAuth.createUserWithEmailAndPassword(
+                  email: emailController.text,
+                  password: passwordController.text))
+              .user;
+      if (firebaseUser != null) {
+        Map userDataMap = {
+          "name": nameController.text.trim(),
+          "email": emailController.text.trim(),
+          "phone": phoneController.text.trim(),
+        };
+        userRef.child(firebaseUser.uid).set(userDataMap);
+        displayToastMessage(
+            "Congratulations, your account has been succesfully created.",
+            context);
+        Navigator.pushNamedAndRemoveUntil(
+            context, MainScreen.idScreen, (route) => false);
+      } else {
+        displayToastMessage("User has not been created", context);
+      }
+    } catch (errMsg) {
+      print(errMsg.toString());
+      // displayToastMessage("$errMsg.toString()", context);
     }
   }
 }
