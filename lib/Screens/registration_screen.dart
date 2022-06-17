@@ -162,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return ProgressDialog(
+            return const ProgressDialog(
               message: "Registering, Please Wait...",
             );
           });
@@ -192,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     } catch (errMsg) {
       Navigator.pop(context);
-      print(errMsg.toString());
+      // print(errMsg.toString());
       // displayToastMessage("$errMsg.toString()", context);
     }
   }

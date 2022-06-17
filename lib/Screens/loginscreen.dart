@@ -129,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return ProgressDialog(
+            return const ProgressDialog(
               message: "Authenticating, Please Wait...",
             );
           });
@@ -152,6 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         });
       } else {
+        if (!mounted) return;
         Navigator.pop(context);
 
         displayToastMessage("Error occured", context);

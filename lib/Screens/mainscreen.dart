@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -15,15 +14,71 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController? newGoogleMapController;
-  static final CameraPosition _kGooglePlex = CameraPosition(
+  GlobalKey<ScaffoldState> scaffoldkey = GlobalKey<ScaffoldState>();
+  static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: scaffoldkey,
         appBar: AppBar(
           title: const Text("Rider App"),
+        ),
+        drawer: Container(
+          color: Colors.white,
+          width: 255,
+          child: Drawer(
+              child: ListView(
+            children: [
+              SizedBox(
+                height: 165,
+                child: DrawerHeader(
+                  decoration: const BoxDecoration(color: Colors.white),
+                  child: Row(children: [
+                    Image.asset("images/user_icon.png", height: 65, width: 65),
+                    const SizedBox(width: 10),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          "Profile Name",
+                          style:
+                              TextStyle(fontSize: 16, fontFamily: "Brand-Bold"),
+                        ),
+                        SizedBox(height: 60),
+                        Text("Visit Profile")
+                      ],
+                    )
+                  ]),
+                ),
+              ),
+              const DividerWidget(),
+              const SizedBox(height: 12),
+              const ListTile(
+                leading: Icon(Icons.history),
+                title: Text(
+                  "History",
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+              const ListTile(
+                leading: Icon(Icons.person),
+                title: Text(
+                  "Visit Profile",
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+              const ListTile(
+                leading: Icon(Icons.info),
+                title: Text(
+                  "About",
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+            ],
+          )),
         ),
         body: Stack(
           children: [
@@ -37,12 +92,40 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             Positioned(
+              top: 45,
+              left: 22,
+              child: GestureDetector(
+                onTap: () {
+                  scaffoldkey.currentState!.openDrawer();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22.0),
+                      boxShadow: const [
+                        BoxShadow(
+                            color: Colors.black,
+                            blurRadius: 6,
+                            spreadRadius: 0.5,
+                            offset: Offset(0.7, 0.7))
+                      ]),
+                  child: const CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 20,
+                      child: Icon(
+                        Icons.menu,
+                        color: Colors.black,
+                      )),
+                ),
+              ),
+            ),
+            Positioned(
                 left: 0,
                 right: 0,
                 bottom: 0,
                 child: Container(
                     height: 320,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(18),
@@ -61,18 +144,19 @@ class _MainScreenState extends State<MainScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 6),
-                          Text("Hey there,", style: TextStyle(fontSize: 12)),
-                          Text("Where to?",
+                          const SizedBox(height: 6),
+                          const Text("Hey there,",
+                              style: TextStyle(fontSize: 12)),
+                          const Text("Where to?",
                               style: TextStyle(
                                   fontSize: 20, fontFamily: "Brand-Bold")),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Container(
                             height: 40,
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(5),
-                                boxShadow: [
+                                boxShadow: const [
                                   BoxShadow(
                                     color: Colors.black54,
                                     blurRadius: 6,
@@ -81,7 +165,7 @@ class _MainScreenState extends State<MainScreen> {
                                   )
                                 ]),
                             child: Row(
-                              children: [
+                              children: const [
                                 Icon(
                                   Icons.search,
                                   color: Colors.blueAccent,
@@ -94,16 +178,16 @@ class _MainScreenState extends State<MainScreen> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Row(
                             children: [
-                              Icon(Icons.home, color: Colors.grey),
-                              SizedBox(
+                              const Icon(Icons.home, color: Colors.grey),
+                              const SizedBox(
                                 width: 12,
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                                children: const [
                                   Text("Add Home"),
                                   SizedBox(height: 4),
                                   Text("Your current address",
@@ -114,16 +198,16 @@ class _MainScreenState extends State<MainScreen> {
                               )
                             ],
                           ),
-                          SizedBox(height: 10),
-                          DividerWidget(),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 10),
+                          const DividerWidget(),
+                          const SizedBox(height: 16),
                           Row(
                             children: [
-                              Icon(Icons.work, color: Colors.grey),
-                              SizedBox(width: 12),
+                              const Icon(Icons.work, color: Colors.grey),
+                              const SizedBox(width: 12),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                                children: const [
                                   Text("Add Work"),
                                   SizedBox(height: 4),
                                   Text(
