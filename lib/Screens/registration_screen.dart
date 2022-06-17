@@ -6,6 +6,8 @@ import 'package:uber_app/Screens/loginscreen.dart';
 import 'package:uber_app/Screens/mainscreen.dart';
 import 'package:uber_app/main.dart';
 
+import '../Widgets/progressdialog.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
   static const String idScreen = "register";
@@ -156,6 +158,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   registerNewUser(BuildContext context) async {
     try {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return ProgressDialog(
+              message: "Registering, Please Wait...",
+            );
+          });
       final User? firebaseUser =
           (await _firebaseAuth.createUserWithEmailAndPassword(
                   email: emailController.text,
@@ -168,15 +178,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
           "phone": phoneController.text.trim(),
         };
         userRef.child(firebaseUser.uid).set(userDataMap);
+        if (!mounted) return;
         displayToastMessage(
             "Congratulations, your account has been succesfully created.",
             context);
         Navigator.pushNamedAndRemoveUntil(
             context, MainScreen.idScreen, (route) => false);
       } else {
+        if (!mounted) return;
+        Navigator.pop(context);
+
         displayToastMessage("User has not been created", context);
       }
     } catch (errMsg) {
+      Navigator.pop(context);
       print(errMsg.toString());
       // displayToastMessage("$errMsg.toString()", context);
     }

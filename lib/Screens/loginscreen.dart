@@ -1,6 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:uber_app/Screens/mainscreen.dart';
 import 'package:uber_app/Screens/registration_screen.dart';
+import 'package:uber_app/Widgets/progressdialog.dart';
+import 'package:uber_app/main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -10,6 +15,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,31 +43,41 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  const TextField(
+                  TextField(
+                    controller: emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         labelText: "Email",
                         labelStyle: TextStyle(fontSize: 14),
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 10,
                         )),
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
-                  const TextField(
+                  TextField(
+                    controller: passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         labelText: "Password",
                         labelStyle: TextStyle(fontSize: 14),
                         hintStyle: TextStyle(
                           color: Colors.grey,
                           fontSize: 10,
                         )),
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 10),
                   MaterialButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if (!emailController.text.contains("@")) {
+                        displayToastMessage("Email address invalid", context);
+                      } else if (passwordController.text.isEmpty) {
+                        displayToastMessage("Password Required!!!", context);
+                      } else {
+                        loginWithEmailPassword(context);
+                      }
+                    },
                     color: Colors.yellow,
                     textColor: Colors.black,
                     shape: RoundedRectangleBorder(
@@ -102,5 +119,47 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  void loginWithEmailPassword(BuildContext context) async {
+    try {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return ProgressDialog(
+              message: "Authenticating, Please Wait...",
+            );
+          });
+      final User? firebaseUser =
+          (await _firebaseAuth.signInWithEmailAndPassword(
+                  email: emailController.text,
+                  password: passwordController.text))
+              .user;
+      if (firebaseUser != null) {
+        userRef.child(firebaseUser.uid).once().then((event) {
+          if (event.snapshot.value != null) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, MainScreen.idScreen, (route) => false);
+            displayToastMessage("Login Succesfull", context);
+          } else {
+            Navigator.pop(context);
+
+            _firebaseAuth.signOut();
+            displayToastMessage("Please Create New Account!!", context);
+          }
+        });
+      } else {
+        Navigator.pop(context);
+
+        displayToastMessage("Error occured", context);
+      }
+    } catch (errMsg) {
+      Navigator.pop(context);
+      // print(errMsg.toString());
+      displayToastMessage("$errMsg", context);
+    }
   }
 }
