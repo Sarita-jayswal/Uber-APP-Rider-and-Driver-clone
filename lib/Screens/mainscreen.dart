@@ -1,8 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:uber_app/Assistants/assistandmethods.dart';
+import 'package:uber_app/DataHandler/appdata.dart';
+import 'package:uber_app/Screens/searchScreen.dart';
 import 'package:uber_app/Widgets/divider.dart';
 
 class MainScreen extends StatefulWidget {
@@ -49,7 +54,19 @@ class _MainScreenState extends State<MainScreen> {
         CameraPosition(target: latLngPosition, zoom: 14);
     newGoogleMapController
         ?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    String address =
+        await AssistantMethods.searchCoordinateAddress(position, context);
+    print("This is your address: $address");
   }
+
+  // Future<String> _getAddress(double? lat, double? lang) async {
+  //   if (lat == null || lang == null) return "";
+  //   GeoCode geoCode = GeoCode();
+  //   Address address =
+  //       await geoCode.reverseGeocoding(latitude: lat, longitude: lang);
+  //   return "${address.streetAddress}, ${address.city}, ${address.countryName}, ${address.postal}";
+
+  // }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
@@ -123,12 +140,13 @@ class _MainScreenState extends State<MainScreen> {
               myLocationButtonEnabled: true,
               initialCameraPosition: _kGooglePlex,
               myLocationEnabled: true,
-              zoomControlsEnabled: true,
-              zoomGesturesEnabled: true,
+              // zoomControlsEnabled: true,
+              // zoomGesturesEnabled: true,
               onMapCreated: (GoogleMapController controller) {
                 _controllerGoogleMap.complete(controller);
                 newGoogleMapController = controller;
                 locatePosition();
+                //_getAddress(37.42796133580664, -122.085749655962);
               },
             ),
             Positioned(
@@ -164,7 +182,7 @@ class _MainScreenState extends State<MainScreen> {
                 right: 0,
                 bottom: 0,
                 child: Container(
-                    height: 320,
+                    height: 275,
                     decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
@@ -180,42 +198,51 @@ class _MainScreenState extends State<MainScreen> {
                         ]),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 18),
+                          horizontal: 15, vertical: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 6),
                           const Text("Hey there,",
-                              style: TextStyle(fontSize: 12)),
+                              style: TextStyle(fontSize: 10)),
                           const Text("Where to?",
                               style: TextStyle(
-                                  fontSize: 20, fontFamily: "Brand-Bold")),
-                          const SizedBox(height: 20),
-                          Container(
-                            height: 40,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black54,
-                                    blurRadius: 6,
-                                    spreadRadius: 0.5,
-                                    offset: Offset(0.7, 0.7),
+                                  fontSize: 14, fontFamily: "Brand-Bold")),
+                          const SizedBox(height: 15),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: ((context) =>
+                                          const SearchScreen())));
+                            },
+                            child: Container(
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(5),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black54,
+                                      blurRadius: 6,
+                                      spreadRadius: 0.5,
+                                      offset: Offset(0.7, 0.7),
+                                    )
+                                  ]),
+                              child: Row(
+                                children: const [
+                                  Icon(
+                                    Icons.search,
+                                    color: Colors.blueAccent,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "Search Drop Destination",
+                                    style: TextStyle(fontSize: 8),
                                   )
-                                ]),
-                            child: Row(
-                              children: const [
-                                Icon(
-                                  Icons.search,
-                                  color: Colors.blueAccent,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  "Search Drop Destination",
-                                  style: TextStyle(fontSize: 10),
-                                )
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -223,16 +250,22 @@ class _MainScreenState extends State<MainScreen> {
                             children: [
                               const Icon(Icons.home, color: Colors.grey),
                               const SizedBox(
-                                width: 12,
+                                width: 10,
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text("Add Home"),
-                                  SizedBox(height: 4),
+                                children: [
+                                  Text(Provider.of<AppData>(context)
+                                              .pickUpLocation !=
+                                          null
+                                      ? Provider.of<AppData>(context)
+                                          .pickUpLocation!
+                                          .placeName
+                                      : "Add Home"),
+                                  SizedBox(height: 3),
                                   Text("Your current address",
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                       ))
                                 ],
                               )
@@ -244,16 +277,16 @@ class _MainScreenState extends State<MainScreen> {
                           Row(
                             children: [
                               const Icon(Icons.work, color: Colors.grey),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 10),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: const [
                                   Text("Add Work"),
-                                  SizedBox(height: 4),
+                                  SizedBox(height: 3),
                                   Text(
                                     "Your work address",
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 10,
                                     ),
                                   )
                                 ],
